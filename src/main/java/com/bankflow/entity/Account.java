@@ -23,7 +23,7 @@ public class Account {
 
     @NotNull
     @DecimalMin(value = "0.0", inclusive = true)
-    private BigDecimal balance;
+    private BigDecimal balance = BigDecimal.ZERO;
 
     @NotBlank
     private String status;

@@ -1,6 +1,9 @@
 package com.bankflow.controller;
 
+import com.bankflow.dto.TransactionRequest;
+import com.bankflow.dto.TransferRequest;
 import com.bankflow.entity.Account;
+import com.bankflow.entity.Transaction;
 import com.bankflow.service.AccountService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -80,6 +83,42 @@ public class AccountController {
         }
 
         return ResponseEntity.notFound().build();
+
+    }
+
+    @PostMapping("/{accountId}/deposit")
+    public ResponseEntity<Account> deposit(@PathVariable Long accountId, @Valid @RequestBody TransactionRequest request) {
+
+        Account account = accountService.deposit(accountId, request);
+
+        return ResponseEntity.ok(account);
+
+    }
+
+    @PostMapping("/{accountId}/withdraw")
+    public ResponseEntity<Account> withdraw(@PathVariable Long accountId, @Valid @RequestBody TransactionRequest request) {
+
+        Account account = accountService.withdraw(accountId, request);
+
+        return ResponseEntity.ok(account);
+
+    }
+
+    @PostMapping("/{accountId}/transfer")
+    public ResponseEntity<Void> transfer(
+            @PathVariable Long accountId,
+            @Valid @RequestBody TransferRequest request) {
+
+        accountService.transfer(accountId, request);
+
+        return ResponseEntity.ok().build();
+
+    }
+
+    @GetMapping("/{accountId}/transactions")
+    public List<Transaction> getTransactionHistory(@PathVariable Long accountId) {
+
+        return accountService.getTransactionHistory(accountId);
 
     }
 }
