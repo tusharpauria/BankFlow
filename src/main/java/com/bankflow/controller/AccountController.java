@@ -1,6 +1,8 @@
 package com.bankflow.controller;
 
+import com.bankflow.dto.AccountResponse;
 import com.bankflow.dto.TransactionRequest;
+import com.bankflow.dto.TransactionResponse;
 import com.bankflow.dto.TransferRequest;
 import com.bankflow.entity.Account;
 import com.bankflow.entity.Transaction;
@@ -26,37 +28,41 @@ public class AccountController {
     }
 
     @PostMapping("/customer/{customerId}")
-    public ResponseEntity<Account> createAccount(@PathVariable Long customerId, @Valid @RequestBody Account account) {
+    public ResponseEntity<AccountResponse> createAccount(@PathVariable Long customerId, @Valid @RequestBody Account account) {
 
         Optional<Account> savedAccount = accountService.createAccount(customerId, account);
 
         if (savedAccount.isPresent()) {
 
+            AccountResponse response = AccountResponse.fromEntity(savedAccount.get());
+
             return ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body(savedAccount.get());
+                    .body(response);
 
         }
 
         return ResponseEntity.notFound().build();
-
     }
 
     @GetMapping
-    public List<Account> getAllAccounts() {
+    public List<AccountResponse> getAllAccounts() {
 
-        return accountService.getAllAccounts();
+        return accountService.getAllAccounts()
+                .stream()
+                .map(AccountResponse::fromEntity)
+                .toList();
 
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Account> getAccountById(@PathVariable Long id) {
+    public ResponseEntity<AccountResponse> getAccountById(@PathVariable Long id) {
 
         Optional<Account> account = accountService.getAccountById(id);
 
         if (account.isPresent()) {
 
-            return ResponseEntity.ok(account.get());
+            return ResponseEntity.ok(AccountResponse.fromEntity(account.get()));
 
         }
 
@@ -65,20 +71,26 @@ public class AccountController {
     }
 
     @GetMapping("/customer/{customerId}")
-    public List<Account> getAccountsByCustomer(@PathVariable Long customerId) {
+    public List<AccountResponse> getAccountsByCustomer(@PathVariable Long customerId) {
 
-        return accountService.getAccountsByCustomer(customerId);
+        return accountService
+                .getAccountsByCustomer(customerId)
+                .stream()
+                .map(AccountResponse::fromEntity)
+                .toList();
 
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Account> updateAccount(@PathVariable Long id, @Valid @RequestBody Account updatedAccount) {
+    public ResponseEntity<AccountResponse> updateAccount(@PathVariable Long id, @Valid @RequestBody Account updatedAccount) {
 
         Optional<Account> account = accountService.updateAccount(id, updatedAccount);
 
         if (account.isPresent()) {
 
-            return ResponseEntity.ok(account.get());
+            AccountResponse response = AccountResponse.fromEntity(account.get());
+
+            return ResponseEntity.ok(response);
 
         }
 
@@ -87,20 +99,20 @@ public class AccountController {
     }
 
     @PostMapping("/{accountId}/deposit")
-    public ResponseEntity<Account> deposit(@PathVariable Long accountId, @Valid @RequestBody TransactionRequest request) {
+    public ResponseEntity<AccountResponse> deposit(@PathVariable Long accountId, @Valid @RequestBody TransactionRequest request) {
 
         Account account = accountService.deposit(accountId, request);
 
-        return ResponseEntity.ok(account);
+        return ResponseEntity.ok(AccountResponse.fromEntity(account));
 
     }
 
     @PostMapping("/{accountId}/withdraw")
-    public ResponseEntity<Account> withdraw(@PathVariable Long accountId, @Valid @RequestBody TransactionRequest request) {
+    public ResponseEntity<AccountResponse> withdraw(@PathVariable Long accountId, @Valid @RequestBody TransactionRequest request) {
 
         Account account = accountService.withdraw(accountId, request);
 
-        return ResponseEntity.ok(account);
+        return ResponseEntity.ok(AccountResponse.fromEntity(account));
 
     }
 
@@ -116,9 +128,13 @@ public class AccountController {
     }
 
     @GetMapping("/{accountId}/transactions")
-    public List<Transaction> getTransactionHistory(@PathVariable Long accountId) {
+    public List<TransactionResponse> getTransactionHistory(@PathVariable Long accountId) {
 
-        return accountService.getTransactionHistory(accountId);
+        return accountService
+                .getTransactionHistory(accountId)
+                .stream()
+                .map(TransactionResponse::fromEntity)
+                .toList();
 
     }
 }

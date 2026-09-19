@@ -1,5 +1,6 @@
 package com.bankflow.controller;
 
+import com.bankflow.dto.CustomerResponse;
 import com.bankflow.entity.Customer;
 import com.bankflow.service.CustomerService;
 import jakarta.validation.Valid;
@@ -23,31 +24,34 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody Customer customer) {
+    public ResponseEntity<CustomerResponse> createCustomer(@Valid @RequestBody Customer customer) {
 
         Customer savedCustomer = customerService.createCustomer(customer);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(savedCustomer);
+                .body(CustomerResponse.fromEntity(savedCustomer));
 
     }
 
     @GetMapping
-    public List<Customer> getAllCustomers() {
+    public List<CustomerResponse> getAllCustomers() {
 
-        return customerService.getAllCustomers();
+        return customerService.getAllCustomers()
+                .stream()
+                .map(CustomerResponse::fromEntity)
+                .toList();
 
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
+    public ResponseEntity<CustomerResponse> getCustomerById(@PathVariable Long id) {
 
         Optional<Customer> customer = customerService.getCustomerById(id);
 
         if (customer.isPresent()) {
 
-            return ResponseEntity.ok(customer.get());
+            return ResponseEntity.ok(CustomerResponse.fromEntity(customer.get()));
 
         }
 
@@ -56,13 +60,13 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @Valid @RequestBody Customer updatedCustomer) {
+    public ResponseEntity<CustomerResponse> updateCustomer(@PathVariable Long id, @Valid @RequestBody Customer updatedCustomer) {
 
         Optional<Customer> customer = customerService.updateCustomer(id, updatedCustomer);
 
         if (customer.isPresent()) {
 
-            return ResponseEntity.ok(customer.get());
+            return ResponseEntity.ok(CustomerResponse.fromEntity(customer.get()));
 
         }
 
