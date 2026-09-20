@@ -4,6 +4,7 @@ import com.bankflow.dto.CustomerResponse;
 import com.bankflow.entity.Customer;
 import com.bankflow.service.CustomerService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,12 +36,11 @@ public class CustomerController {
     }
 
     @GetMapping
-    public List<CustomerResponse> getAllCustomers() {
+    public Page<CustomerResponse> getAllCustomers(@RequestParam(defaultValue = "0") int page,
+                                                  @RequestParam(defaultValue = "5") int size) {
 
-        return customerService.getAllCustomers()
-                .stream()
-                .map(CustomerResponse::fromEntity)
-                .toList();
+        return customerService.getAllCustomers(page, size)
+                .map(CustomerResponse::fromEntity);
 
     }
 

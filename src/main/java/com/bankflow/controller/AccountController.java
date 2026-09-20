@@ -8,6 +8,7 @@ import com.bankflow.entity.Account;
 import com.bankflow.entity.Transaction;
 import com.bankflow.service.AccountService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,15 +44,15 @@ public class AccountController {
         }
 
         return ResponseEntity.notFound().build();
+
     }
 
     @GetMapping
-    public List<AccountResponse> getAllAccounts() {
+    public Page<AccountResponse> getAllAccounts(@RequestParam(defaultValue = "0") int page,
+                                                @RequestParam(defaultValue = "5") int size) {
 
-        return accountService.getAllAccounts()
-                .stream()
-                .map(AccountResponse::fromEntity)
-                .toList();
+        return accountService.getAllAccounts(page, size)
+                .map(AccountResponse::fromEntity);
 
     }
 
@@ -126,13 +127,11 @@ public class AccountController {
     }
 
     @GetMapping("/{accountId}/transactions")
-    public List<TransactionResponse> getTransactionHistory(@PathVariable Long accountId) {
+    public Page<TransactionResponse> getTransactionHistory(@PathVariable Long accountId, @RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "10") int size) {
 
-        return accountService
-                .getTransactionHistory(accountId)
-                .stream()
-                .map(TransactionResponse::fromEntity)
-                .toList();
+        return accountService.getTransactionHistory(accountId, page, size)
+                .map(TransactionResponse::fromEntity);
 
     }
 }

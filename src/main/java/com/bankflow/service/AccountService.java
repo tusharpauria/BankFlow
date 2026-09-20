@@ -9,6 +9,9 @@ import com.bankflow.exception.InsufficientBalanceException;
 import com.bankflow.repository.AccountRepository;
 import com.bankflow.repository.CustomerRepository;
 import com.bankflow.repository.TransactionRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,9 +51,11 @@ public class AccountService {
 
     }
 
-    public List<Account> getAllAccounts() {
+    public Page<Account> getAllAccounts(int page, int size) {
 
-        return accountRepository.findAll();
+        Pageable pageable = PageRequest.of(page, size);
+
+        return accountRepository.findAll(pageable);
 
     }
 
@@ -189,7 +194,7 @@ public class AccountService {
 
     }
 
-    public List<Transaction> getTransactionHistory(Long accountId) {
+    public Page<Transaction> getTransactionHistory(Long accountId, int page, int size) {
 
         if (!accountRepository.existsById(accountId)) {
 
@@ -197,7 +202,9 @@ public class AccountService {
 
         }
 
-        return transactionRepository.findByAccountIdOrderByTimestampDesc(accountId);
+        Pageable pageable = PageRequest.of(page, size);
+
+        return transactionRepository.findByAccountIdOrderByTimestampDesc(accountId, pageable);
 
     }
 }
