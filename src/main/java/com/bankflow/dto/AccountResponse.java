@@ -1,6 +1,8 @@
 package com.bankflow.dto;
 
 import com.bankflow.entity.Account;
+import com.bankflow.entity.AccountStatus;
+import com.bankflow.entity.AccountType;
 
 import java.math.BigDecimal;
 
@@ -8,16 +10,16 @@ public class AccountResponse {
 
     private Long accountId;
     private String accountNumber;
-    private String accountType;
+    private AccountType accountType;
     private BigDecimal balance;
-    private String status;
+    private AccountStatus status;
     private Long customerId;
 
     public AccountResponse() {
 
     }
 
-    public AccountResponse(Long accountId, String accountNumber, String accountType, BigDecimal balance, String status, Long customerId) {
+    public AccountResponse(Long accountId, String accountNumber, AccountType accountType, BigDecimal balance, AccountStatus status, Long customerId) {
 
         this.accountId = accountId;
         this.accountNumber = accountNumber;
@@ -65,13 +67,13 @@ public class AccountResponse {
 
     }
 
-    public String getAccountType() {
+    public AccountType getAccountType() {
 
         return accountType;
 
     }
 
-    public void setAccountType(String accountType) {
+    public void setAccountType(AccountType accountType) {
 
         this.accountType = accountType;
 
@@ -89,13 +91,13 @@ public class AccountResponse {
 
     }
 
-    public String getStatus() {
+    public AccountStatus getStatus() {
 
         return status;
 
     }
 
-    public void setStatus(String status) {
+    public void setStatus(AccountStatus status) {
 
         this.status = status;
 

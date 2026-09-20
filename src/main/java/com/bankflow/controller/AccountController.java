@@ -117,9 +117,7 @@ public class AccountController {
     }
 
     @PostMapping("/{accountId}/transfer")
-    public ResponseEntity<Void> transfer(
-            @PathVariable Long accountId,
-            @Valid @RequestBody TransferRequest request) {
+    public ResponseEntity<Void> transfer(@PathVariable Long accountId, @Valid @RequestBody TransferRequest request) {
 
         accountService.transfer(accountId, request);
 

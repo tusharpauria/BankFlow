@@ -2,10 +2,7 @@ package com.bankflow.service;
 
 import com.bankflow.dto.TransactionRequest;
 import com.bankflow.dto.TransferRequest;
-import com.bankflow.entity.Account;
-import com.bankflow.entity.Customer;
-import com.bankflow.entity.Transaction;
-import com.bankflow.entity.TransactionType;
+import com.bankflow.entity.*;
 import com.bankflow.exception.AccountNotFoundException;
 import com.bankflow.exception.InactiveAccountException;
 import com.bankflow.exception.InsufficientBalanceException;
@@ -94,9 +91,10 @@ public class AccountService {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found: " + accountId));
 
-        if (!account.getStatus().equalsIgnoreCase("ACTIVE")) {
+        if (account.getStatus() != AccountStatus.ACTIVE) {
 
             throw new InactiveAccountException("Account is not active");
+
         }
 
         BigDecimal amount = request.getAmount();
@@ -119,7 +117,7 @@ public class AccountService {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found: " + accountId));
 
-        if (!account.getStatus().equalsIgnoreCase("ACTIVE")) {
+        if (account.getStatus() != AccountStatus.ACTIVE) {
 
             throw new InactiveAccountException("Account is not active");
 
@@ -154,8 +152,7 @@ public class AccountService {
         Account toAccount = accountRepository.findById(request.getToAccountId())
                 .orElseThrow(() -> new AccountNotFoundException("Destination account not found: " + request.getToAccountId()));
 
-        if (!fromAccount.getStatus().equalsIgnoreCase("ACTIVE")
-                || !toAccount.getStatus().equalsIgnoreCase("ACTIVE")) {
+        if (fromAccount.getStatus() != AccountStatus.ACTIVE || toAccount.getStatus() != AccountStatus.ACTIVE) {
 
             throw new InactiveAccountException("Both accounts must be active");
 

@@ -18,15 +18,15 @@ public class Account {
     @Column(unique = true, nullable = false)
     private String accountNumber;
 
-    @NotBlank
-    private String accountType;
+    @Enumerated(EnumType.STRING)
+    private AccountType accountType;
 
     @NotNull
     @DecimalMin(value = "0.0", inclusive = true)
     private BigDecimal balance = BigDecimal.ZERO;
 
-    @NotBlank
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private AccountStatus status;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
@@ -36,7 +36,7 @@ public class Account {
 
     }
 
-    public Account(String accountNumber, String accountType, BigDecimal balance, String status, Customer customer) {
+    public Account(String accountNumber, AccountType accountType, BigDecimal balance, AccountStatus status, Customer customer) {
 
         this.accountNumber = accountNumber;
         this.accountType = accountType;
@@ -70,13 +70,13 @@ public class Account {
 
     }
 
-    public String getAccountType() {
+    public AccountType getAccountType() {
 
         return accountType;
 
     }
 
-    public void setAccountType(String accountType) {
+    public void setAccountType(AccountType accountType) {
 
         this.accountType = accountType;
 
@@ -94,13 +94,13 @@ public class Account {
 
     }
 
-    public String getStatus() {
+    public AccountStatus getStatus() {
 
         return status;
 
     }
 
-    public void setStatus(String status) {
+    public void setStatus(AccountStatus status) {
 
         this.status = status;
 
@@ -117,4 +117,8 @@ public class Account {
         this.customer = customer;
 
     }
+
+
+
+
 }
