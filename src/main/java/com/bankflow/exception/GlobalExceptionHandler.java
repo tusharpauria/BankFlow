@@ -64,6 +64,13 @@ public class GlobalExceptionHandler {
 
     }
 
+    @ExceptionHandler(DuplicateCustomerException.class)
+    public ResponseEntity<Map<String, Object>> handleDuplicateCustomer(DuplicateCustomerException ex) {
+
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Bad Request", ex.getMessage());
+
+    }
+
     private ResponseEntity<Map<String, Object>> buildErrorResponse(HttpStatus status, String error, String message) {
 
         Map<String, Object> response = new HashMap<>();
@@ -77,6 +84,7 @@ public class GlobalExceptionHandler {
                 .status(status)
                 .body(response);
 
-
     }
+
+
 }

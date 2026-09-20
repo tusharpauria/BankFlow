@@ -1,6 +1,7 @@
 package com.bankflow.service;
 
 import com.bankflow.entity.Customer;
+import com.bankflow.exception.DuplicateCustomerException;
 import com.bankflow.repository.CustomerRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +23,18 @@ public class CustomerService {
     }
 
     public Customer createCustomer(Customer customer) {
+
+        if (customerRepository.findByEmail(customer.getEmail()).isPresent()) {
+
+            throw new DuplicateCustomerException("Customer with this email already exists");
+
+        }
+
+        if (customerRepository.findByPhone(customer.getPhone()).isPresent()) {
+
+            throw new DuplicateCustomerException("Customer with this phone number already exists");
+
+        }
 
         return customerRepository.save(customer);
 
