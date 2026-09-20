@@ -23,6 +23,9 @@ public class Transaction {
     @NotNull
     private TransactionType type;
 
+    @Column(nullable = false)
+    private String transactionReference;
+
     private LocalDateTime timestamp;
 
     @ManyToOne
@@ -33,10 +36,11 @@ public class Transaction {
 
     }
 
-    public Transaction(BigDecimal amount, TransactionType type, LocalDateTime timestamp, Account account) {
+    public Transaction(BigDecimal amount, TransactionType type, String transactionReference, LocalDateTime timestamp, Account account) {
 
         this.amount = amount;
         this.type = type;
+        this.transactionReference = transactionReference;
         this.timestamp = timestamp;
         this.account = account;
 
@@ -75,6 +79,18 @@ public class Transaction {
     public void setType(TransactionType type) {
 
         this.type = type;
+
+    }
+
+    public String getTransactionReference() {
+
+        return transactionReference;
+
+    }
+
+    public void setTransactionReference(String transactionReference) {
+
+        this.transactionReference = transactionReference;
 
     }
 

@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AccountService {
@@ -109,9 +110,12 @@ public class AccountService {
 
         accountRepository.save(account);
 
+        String transactionReference = "TXN-" + UUID.randomUUID().toString();
+
         Transaction transaction = new Transaction(
                 amount,
                 TransactionType.DEPOSIT,
+                transactionReference,
                 LocalDateTime.now(),
                 account
         );
@@ -146,9 +150,12 @@ public class AccountService {
 
         accountRepository.save(account);
 
+        String transactionReference = "TXN-" + UUID.randomUUID().toString();
+
         Transaction transaction = new Transaction(
                 amount,
                 TransactionType.WITHDRAWAL,
+                transactionReference,
                 LocalDateTime.now(),
                 account
         );
@@ -195,9 +202,13 @@ public class AccountService {
         accountRepository.save(fromAccount);
         accountRepository.save(toAccount);
 
-        Transaction withdrawal = new Transaction(amount, TransactionType.TRANSFER, LocalDateTime.now(), fromAccount);
+        String transactionReference = "TXN-" + UUID.randomUUID().toString();
 
-        Transaction deposit = new Transaction(amount, TransactionType.TRANSFER, LocalDateTime.now(), toAccount);
+        Transaction withdrawal = new Transaction(amount, TransactionType.TRANSFER, transactionReference, LocalDateTime.now(),
+                fromAccount);
+
+        Transaction deposit = new Transaction(amount, TransactionType.TRANSFER, transactionReference, LocalDateTime.now(),
+                toAccount);
 
         transactionRepository.save(withdrawal);
         transactionRepository.save(deposit);

@@ -12,18 +12,20 @@ public class TransactionResponse {
     private Long accountId;
     private BigDecimal amount;
     private TransactionType type;
+    private String transactionReference;
     private LocalDateTime timestamp;
 
     public TransactionResponse() {
 
     }
 
-    public TransactionResponse(Long transactionId, Long accountId, BigDecimal amount, TransactionType type, LocalDateTime timestamp) {
+    public TransactionResponse(Long transactionId, Long accountId, BigDecimal amount, TransactionType type, String transactionReference, LocalDateTime timestamp) {
 
         this.transactionId = transactionId;
         this.accountId = accountId;
         this.amount = amount;
         this.type = type;
+        this.transactionReference = transactionReference;
         this.timestamp = timestamp;
 
     }
@@ -35,6 +37,7 @@ public class TransactionResponse {
                 transaction.getAccount().getId(),
                 transaction.getAmount(),
                 transaction.getType(),
+                transaction.getTransactionReference(),
                 transaction.getTimestamp()
         );
 
@@ -85,6 +88,18 @@ public class TransactionResponse {
     public void setType(TransactionType type) {
 
         this.type = type;
+
+    }
+
+    public String getTransactionReference() {
+
+        return transactionReference;
+
+    }
+
+    public void setTransactionReference(String transactionReference) {
+
+        this.transactionReference = transactionReference;
 
     }
 
