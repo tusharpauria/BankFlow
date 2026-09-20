@@ -1,5 +1,6 @@
 package com.bankflow.service;
 
+import com.bankflow.dto.AccountRequest;
 import com.bankflow.dto.TransactionRequest;
 import com.bankflow.dto.TransferRequest;
 import com.bankflow.dto.TransferResponse;
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class AccountService {
@@ -37,7 +39,7 @@ public class AccountService {
 
     }
 
-    public Optional<Account> createAccount(Long customerId, Account account) {
+    public Optional<Account> createAccount(Long customerId, AccountRequest request) {
 
         Optional<Customer> customer = customerRepository.findById(customerId);
 
@@ -47,7 +49,17 @@ public class AccountService {
 
         }
 
+        Account account = new Account();
+
         account.setCustomer(customer.get());
+
+        account.setAccountType(request.getAccountType());
+
+        account.setAccountNumber("BF" + ThreadLocalRandom.current().nextLong(10000000L, 100000000L));
+
+        account.setBalance(BigDecimal.ZERO);
+
+        account.setStatus(AccountStatus.ACTIVE);
 
         return Optional.of(accountRepository.save(account));
 

@@ -26,21 +26,19 @@ public class AccountController {
     }
 
     @PostMapping("/customer/{customerId}")
-    public ResponseEntity<AccountResponse> createAccount(@PathVariable Long customerId, @Valid @RequestBody Account account) {
+    public ResponseEntity<AccountResponse> createAccount(@PathVariable Long customerId,
+                                                         @Valid @RequestBody AccountRequest request) {
 
-        Optional<Account> savedAccount = accountService.createAccount(customerId, account);
+        Optional<Account> account =
+                accountService.createAccount(customerId, request);
 
-        if (savedAccount.isPresent()) {
-
-            AccountResponse response = AccountResponse.fromEntity(savedAccount.get());
-
-            return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .body(response);
-
+        if (account.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.notFound().build();
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(AccountResponse.fromEntity(account.get()));
 
     }
 
