@@ -1,9 +1,6 @@
 package com.bankflow.controller;
 
-import com.bankflow.dto.AccountResponse;
-import com.bankflow.dto.TransactionRequest;
-import com.bankflow.dto.TransactionResponse;
-import com.bankflow.dto.TransferRequest;
+import com.bankflow.dto.*;
 import com.bankflow.entity.Account;
 import com.bankflow.entity.Transaction;
 import com.bankflow.service.AccountService;
@@ -118,11 +115,11 @@ public class AccountController {
     }
 
     @PostMapping("/{accountId}/transfer")
-    public ResponseEntity<Void> transfer(@PathVariable Long accountId, @Valid @RequestBody TransferRequest request) {
+    public ResponseEntity<TransferResponse> transfer(@PathVariable Long accountId, @Valid @RequestBody TransferRequest request) {
 
-        accountService.transfer(accountId, request);
+        TransferResponse response = accountService.transfer(accountId, request);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(response);
 
     }
 

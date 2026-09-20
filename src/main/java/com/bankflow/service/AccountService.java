@@ -2,6 +2,7 @@ package com.bankflow.service;
 
 import com.bankflow.dto.TransactionRequest;
 import com.bankflow.dto.TransferRequest;
+import com.bankflow.dto.TransferResponse;
 import com.bankflow.entity.*;
 import com.bankflow.exception.AccountNotFoundException;
 import com.bankflow.exception.InactiveAccountException;
@@ -93,7 +94,7 @@ public class AccountService {
     @Transactional
     public Account deposit(Long accountId, TransactionRequest request) {
 
-        Account account = accountRepository.findById(accountId)
+        Account account = accountRepository.findByIdForUpdate(accountId)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found: " + accountId));
 
         if (account.getStatus() != AccountStatus.ACTIVE) {
@@ -108,7 +109,12 @@ public class AccountService {
 
         accountRepository.save(account);
 
-        Transaction transaction = new Transaction(amount, TransactionType.DEPOSIT, LocalDateTime.now(), account);
+        Transaction transaction = new Transaction(
+                amount,
+                TransactionType.DEPOSIT,
+                LocalDateTime.now(),
+                account
+        );
 
         transactionRepository.save(transaction);
 
@@ -119,7 +125,7 @@ public class AccountService {
     @Transactional
     public Account withdraw(Long accountId, TransactionRequest request) {
 
-        Account account = accountRepository.findById(accountId)
+        Account account = accountRepository.findByIdForUpdate(accountId)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found: " + accountId));
 
         if (account.getStatus() != AccountStatus.ACTIVE) {
@@ -140,7 +146,12 @@ public class AccountService {
 
         accountRepository.save(account);
 
-        Transaction transaction = new Transaction(amount, TransactionType.WITHDRAWAL, LocalDateTime.now(), account);
+        Transaction transaction = new Transaction(
+                amount,
+                TransactionType.WITHDRAWAL,
+                LocalDateTime.now(),
+                account
+        );
 
         transactionRepository.save(transaction);
 
@@ -149,12 +160,12 @@ public class AccountService {
     }
 
     @Transactional
-    public void transfer(Long fromAccountId, TransferRequest request) {
+    public TransferResponse transfer(Long fromAccountId, TransferRequest request) {
 
-        Account fromAccount = accountRepository.findById(fromAccountId)
+        Account fromAccount = accountRepository.findByIdForUpdate(fromAccountId)
                 .orElseThrow(() -> new AccountNotFoundException("Source account not found: " + fromAccountId));
 
-        Account toAccount = accountRepository.findById(request.getToAccountId())
+        Account toAccount = accountRepository.findByIdForUpdate(request.getToAccountId())
                 .orElseThrow(() -> new AccountNotFoundException("Destination account not found: " + request.getToAccountId()));
 
         if (fromAccount.getStatus() != AccountStatus.ACTIVE || toAccount.getStatus() != AccountStatus.ACTIVE) {
@@ -173,8 +184,7 @@ public class AccountService {
 
         if (fromAccount.getBalance().compareTo(amount) < 0) {
 
-            throw new InsufficientBalanceException(
-                    "Insufficient balance");
+            throw new InsufficientBalanceException("Insufficient balance");
 
         }
 
@@ -191,6 +201,14 @@ public class AccountService {
 
         transactionRepository.save(withdrawal);
         transactionRepository.save(deposit);
+
+        return new TransferResponse(
+                "Transfer successful",
+                fromAccount.getId(),
+                toAccount.getId(),
+                amount,
+                LocalDateTime.now()
+        );
 
     }
 

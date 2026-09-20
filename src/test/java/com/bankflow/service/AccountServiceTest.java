@@ -39,7 +39,7 @@ class AccountServiceTest {
     private AccountService accountService;
 
     @Test
-    void shouldRejectTransferToSameAccount() {
+    void shouldTransferMoneySuccessfully() {
 
         Customer customer = new Customer(
                 "Tushar",
@@ -49,7 +49,7 @@ class AccountServiceTest {
         );
         customer.setId(1L);
 
-        Account account = new Account(
+        Account fromAccount = new Account(
                 "1000000001",
                 AccountType.SAVINGS,
                 new BigDecimal("10000.00"),
@@ -57,23 +57,45 @@ class AccountServiceTest {
                 customer
         );
 
-        account.setId(1L);
+        fromAccount.setId(1L);
 
-        when(accountRepository.findById(1L))
-                .thenReturn(Optional.of(account));
-
-        TransferRequest request =
-                new TransferRequest(
-                        1L,
-                        new BigDecimal("1000.00")
-                );
-
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> accountService.transfer(1L, request)
+        Account toAccount = new Account(
+                "1000000002",
+                AccountType.SAVINGS,
+                new BigDecimal("5000.00"),
+                AccountStatus.ACTIVE,
+                customer
         );
 
-        verify(accountRepository, never()).save(any());
-        verify(transactionRepository, never()).save(any());
+        toAccount.setId(2L);
+
+        when(accountRepository.findByIdForUpdate(1L))
+                .thenReturn(Optional.of(fromAccount));
+
+        when(accountRepository.findByIdForUpdate(2L))
+                .thenReturn(Optional.of(toAccount));
+        TransferRequest request =
+                new TransferRequest(
+                        2L,
+                        new BigDecimal("2500.00")
+                );
+
+        accountService.transfer(1L, request);
+
+        assertEquals(
+                new BigDecimal("7500.00"),
+                fromAccount.getBalance()
+        );
+
+        assertEquals(
+                new BigDecimal("7500.00"),
+                toAccount.getBalance()
+        );
+
+        verify(accountRepository).save(fromAccount);
+        verify(accountRepository).save(toAccount);
+
+        verify(transactionRepository, times(2))
+                .save(any(Transaction.class));
     }
 }
